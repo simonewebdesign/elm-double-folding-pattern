@@ -2,11 +2,15 @@ import Html exposing (Html, div, button, text)
 import Html.Events exposing (onClick)
 import StartApp.Simple as StartApp
 
-type alias Model = Int
+type alias Model =
+  { counter: Int
+  }
 
 
 initialModel : Model
-initialModel = 0
+initialModel =
+  { counter = 0
+  }
 
 
 main : Signal Html
@@ -18,7 +22,7 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div []
     [ button [ onClick address Decrement ] [ text "-" ]
-    , div [] [ text (toString model) ]
+    , div [] [ text (toString model.counter) ]
     , button [ onClick address Increment ] [ text "+" ]
     ]
 
@@ -29,5 +33,5 @@ type Action = Increment | Decrement
 update : Action -> Model -> Model
 update action model =
   case action of
-    Increment -> model + 1
-    Decrement -> model - 1
+    Increment -> { model | counter = model.counter + 1 }
+    Decrement -> { model | counter = model.counter - 1 }
