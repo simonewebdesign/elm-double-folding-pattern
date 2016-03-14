@@ -303,21 +303,6 @@ creditCardForm state =
     ]
 
 
-creditCardInput : Html
-creditCardInput =
-  input
-    [ type' "text"
-    --, on "input" targetValue (\digit -> Signal.message events.address (DigitEntry digit))
-    ] []
-
-
-submitButton : Html
-submitButton =
-  input
-    [ type' "submit"
-    ] []
-
-
 cardNumber : ViewState -> String
 cardNumber state =
   state.cardNumber0 ++ " " ++
