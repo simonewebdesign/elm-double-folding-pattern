@@ -151,7 +151,7 @@ creditCardForm state =
         ]
       ]
     , Html.form [ autocomplete False, class "form", novalidate False ]
-      [ fieldset []
+      [ fieldset [ class "card-number-inputs" ]
         [ label [ for "card-number" ]
           [ text "Card Number" ]
         , input [ class "input-card-number"
@@ -167,6 +167,7 @@ creditCardForm state =
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 digit))
+                , attribute "data-autofocus" <| toString <| String.length state.cardNumber0 > 3
                 ]
           []
         , text "      "
@@ -175,6 +176,7 @@ creditCardForm state =
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 digit))
+                , attribute "data-autofocus" <| toString <| String.length state.cardNumber1 > 3
                 ]
           []
         , text "      "
@@ -183,6 +185,7 @@ creditCardForm state =
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 digit))
+                , attribute "data-autofocus" <| toString <| String.length state.cardNumber2 > 3
                 ]
           []
         , text "    "
