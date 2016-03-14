@@ -5,6 +5,7 @@ import Signal exposing (Address)
 import Keyboard
 import Mouse
 import Time
+import String
 
 
 type alias Model =
@@ -127,7 +128,7 @@ creditCardForm state =
             [ label []
               [ text "Expires" ]
             , div []
-              []
+              [ text (cardExpirationDate state) ]
             ]
           ]
         , div [ class "back" ]
@@ -198,7 +199,9 @@ creditCardForm state =
         [ label [ for "card-expiration-month" ]
           [ text "Expiration date" ]
         , div [ class "select" ]
-          [ select [ id "card-expiration-month" ]
+          [ select [ id "card-expiration-month"
+                   , on "input" targetValue (\month -> Signal.message events.address (ExpirationMonthChange month))
+                   ]
             [ option []
               []
             , option []
@@ -228,7 +231,9 @@ creditCardForm state =
             ]
           ]
         , div [ class "select" ]
-          [ select [ id "card-expiration-year" ]
+          [ select [ id "card-expiration-year"
+                   , on "input" targetValue (\year -> Signal.message events.address (ExpirationYearChange year))
+                   ]
             [ option []
               []
             , option []
@@ -297,6 +302,34 @@ cardNumber state =
   state.cardNumber3
 
 
+cardExpirationMonth : ViewState -> String
+cardExpirationMonth state =
+  case state.cardExpirationMonth of
+    "Jan" -> "01"
+    "Feb" -> "02"
+    "Mar" -> "03"
+    "Apr" -> "04"
+    "May" -> "05"
+    "Jun" -> "06"
+    "Jul" -> "07"
+    "Aug" -> "08"
+    "Sep" -> "09"
+    "Oct" -> "10"
+    "Nov" -> "11"
+    "Dec" -> "12"
+    _ -> ""
+
+
+cardExpirationYear : ViewState -> String
+cardExpirationYear state =
+  String.right 2 state.cardExpirationYear
+
+
+cardExpirationDate : ViewState -> String
+cardExpirationDate state =
+  (cardExpirationMonth state) ++ "/" ++ (cardExpirationYear state)
+
+
 type Action
   = NoOp
   | Increment
@@ -321,6 +354,8 @@ type Event
  | DigitEntry2 String
  | DigitEntry3 String
  | HolderEntry String
+ | ExpirationMonthChange String
+ | ExpirationYearChange String
  | CCVEntry String
 
 
@@ -333,4 +368,6 @@ render event state =
     DigitEntry2 newDigit -> { state | cardNumber2 = newDigit }
     DigitEntry3 newDigit -> { state | cardNumber3 = newDigit }
     HolderEntry newEntry -> { state | cardHolderName = newEntry }
+    ExpirationMonthChange newMonth -> { state | cardExpirationMonth = newMonth }
+    ExpirationYearChange  newYear ->  { state | cardExpirationYear = newYear }
     CCVEntry newEntry -> { state | cardCCV = newEntry }
