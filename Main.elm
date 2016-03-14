@@ -121,7 +121,7 @@ creditCardForm state =
             [ label []
               [ text "Card holder" ]
             , div []
-              []
+              [ text state.cardHolderName ]
             ]
           , div [ class "card-expiration-date" ]
             [ label []
@@ -152,7 +152,7 @@ creditCardForm state =
         [ label [ for "card-number" ]
           [ text "Card Number" ]
         , input [ class "input-card-number"
-                , id "card-number"
+                , id "card-number0"
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 digit))
@@ -160,7 +160,7 @@ creditCardForm state =
           []
         , text "      "
         , input [ class "input-card-number"
-                , id "card-number"
+                , id "card-number1"
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 digit))
@@ -168,7 +168,7 @@ creditCardForm state =
           []
         , text "      "
         , input [ class "input-card-number"
-                , id "card-number"
+                , id "card-number2"
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 digit))
@@ -176,7 +176,7 @@ creditCardForm state =
           []
         , text "      "
                 , input [ class "input-card-number"
-                , id "card-number"
+                , id "card-number3"
                 , maxlength 4
                 , type' "num"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 digit))
@@ -187,7 +187,10 @@ creditCardForm state =
       , fieldset []
         [ label [ for "card-holder" ]
           [ text "Card holder" ]
-        , input [ id "card-holder", type' "text" ]
+        , input [ id "card-holder"
+                , type' "text"
+                , on "input" targetValue (\entry -> Signal.message events.address (HolderEntry entry))
+                ]
           []
         , text "    "
         ]
@@ -289,6 +292,7 @@ cardNumber state =
   state.cardNumber2 ++ " " ++
   state.cardNumber3
 
+
 type Action
   = NoOp
   | Increment
@@ -312,6 +316,7 @@ type Event
  | DigitEntry1 String
  | DigitEntry2 String
  | DigitEntry3 String
+ | HolderEntry String
 
 
 render : Event -> ViewState -> ViewState
@@ -322,3 +327,4 @@ render event state =
     DigitEntry1 newDigit -> { state | cardNumber1 = newDigit }
     DigitEntry2 newDigit -> { state | cardNumber2 = newDigit }
     DigitEntry3 newDigit -> { state | cardNumber3 = newDigit }
+    HolderEntry newEntry -> { state | cardHolderName = newEntry }
