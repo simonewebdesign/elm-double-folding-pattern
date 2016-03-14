@@ -21,13 +21,27 @@ initialModel =
 
 
 type alias ViewState =
-  { digits: String
+  { cardNumber0: String
+  , cardNumber1: String
+  , cardNumber2: String
+  , cardNumber3: String
+  , cardHolderName: String
+  , cardExpirationMonth: String
+  , cardExpirationYear: String
+  , cardCCV: String
   }
 
 
 initialViewState : ViewState
 initialViewState =
-  { digits = ""
+  { cardNumber0 = ""
+  , cardNumber1 = ""
+  , cardNumber2 = ""
+  , cardNumber3 = ""
+  , cardHolderName = ""
+  , cardExpirationMonth = ""
+  , cardExpirationYear = ""
+  , cardCCV = ""
   }
 
 
@@ -137,16 +151,36 @@ creditCardForm =
       [ fieldset []
         [ label [ for "card-number" ]
           [ text "Card Number" ]
-        , input [ class "input-cart-number", id "card-number", maxlength 4, type' "num" ]
+        , input [ class "input-card-number"
+                , id "card-number"
+                , maxlength 4
+                , type' "num"
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 digit))
+                ]
           []
         , text "      "
-        , input [ class "input-cart-number", id "card-number-1", maxlength 4, type' "num" ]
+        , input [ class "input-card-number"
+                , id "card-number"
+                , maxlength 4
+                , type' "num"
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 digit))
+                ]
           []
         , text "      "
-        , input [ class "input-cart-number", id "card-number-2", maxlength 4, type' "num" ]
+        , input [ class "input-card-number"
+                , id "card-number"
+                , maxlength 4
+                , type' "num"
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 digit))
+                ]
           []
         , text "      "
-        , input [ class "input-cart-number", id "card-number-3", maxlength 4, type' "num" ]
+                , input [ class "input-card-number"
+                , id "card-number"
+                , maxlength 4
+                , type' "num"
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 digit))
+                ]
           []
         , text "    "
         ]
@@ -237,7 +271,7 @@ creditCardInput : Html
 creditCardInput =
   input
     [ type' "text"
-    , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry digit))
+    --, on "input" targetValue (\digit -> Signal.message events.address (DigitEntry digit))
     ] []
 
 
@@ -267,11 +301,17 @@ update action model =
 
 type Event
  = Never
- | DigitEntry String
+ | DigitEntry0 String
+ | DigitEntry1 String
+ | DigitEntry2 String
+ | DigitEntry3 String
 
 
 render : Event -> ViewState -> ViewState
 render event state =
   case event of
     Never -> state
-    DigitEntry newDigit -> { state | digits = state.digits ++ newDigit }
+    DigitEntry0 newDigit -> { state | cardNumber0 = newDigit }
+    DigitEntry1 newDigit -> { state | cardNumber1 = newDigit }
+    DigitEntry2 newDigit -> { state | cardNumber2 = newDigit }
+    DigitEntry3 newDigit -> { state | cardNumber3 = newDigit }

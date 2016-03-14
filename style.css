@@ -92,14 +92,14 @@ Form
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
 }
-.form fieldset input.input-cart-number,
-.form fieldset .select.input-cart-number {
+.form fieldset input.input-card-number,
+.form fieldset .select.input-card-number {
   width: 82px;
   display: inline-block;
   margin-right: 8px;
 }
-.form fieldset input.input-cart-number:last-child,
-.form fieldset .select.input-cart-number:last-child {
+.form fieldset input.input-card-number:last-child,
+.form fieldset .select.input-card-number:last-child {
   margin-right: 0;
 }
 .form fieldset .select {
