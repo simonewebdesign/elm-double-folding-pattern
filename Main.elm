@@ -96,14 +96,14 @@ view address state model =
     [ button [ onClick address Decrement ] [ text "-" ]
     , div [] [ text (toString model.counter) ]
     , button [ onClick address Increment ] [ text "+" ]
-    , creditCardForm
+    , creditCardForm state
     , "state: " ++ (toString state) |> text
     , "model: " ++ (toString model) |> text
     ]
 
 
-creditCardForm : Html
-creditCardForm =
+creditCardForm : ViewState -> Html
+creditCardForm state =
   div [ class "checkout" ]
     [ div [ class "credit-card-box" ]
       [ div [ class "flip" ]
@@ -116,7 +116,7 @@ creditCardForm =
             , text "        "
             ]
           , div [ class "number" ]
-            []
+            [ text (cardNumber state) ]
           , div [ class "card-holder" ]
             [ label []
               [ text "Card holder" ]
@@ -281,6 +281,13 @@ submitButton =
     [ type' "submit"
     ] []
 
+
+cardNumber : ViewState -> String
+cardNumber state =
+  state.cardNumber0 ++ " " ++
+  state.cardNumber1 ++ " " ++
+  state.cardNumber2 ++ " " ++
+  state.cardNumber3
 
 type Action
   = NoOp
