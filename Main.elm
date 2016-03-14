@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, targetValue)
+import Html.Events exposing (on, onClick, onFocus, onBlur, targetValue)
 import Signal exposing (Address)
 import Keyboard
 import Mouse
@@ -30,6 +30,7 @@ type alias ViewState =
   , cardExpirationMonth: String
   , cardExpirationYear: String
   , cardCCV: String
+  , cardCCVfocused: Bool
   }
 
 
@@ -43,6 +44,7 @@ initialViewState =
   , cardExpirationMonth = ""
   , cardExpirationYear = ""
   , cardCCV = ""
+  , cardCCVfocused = False
   }
 
 
@@ -106,7 +108,7 @@ view address state model =
 creditCardForm : ViewState -> Html
 creditCardForm state =
   div [ class "checkout" ]
-    [ div [ class "credit-card-box" ]
+    [ div [ class ("credit-card-box" ++ if state.cardCCVfocused then " hover" else "") ]
       [ div [ class "flip" ]
         [ div [ class "front" ]
           [ div [ class "chip" ]
@@ -266,6 +268,8 @@ creditCardForm state =
                 , maxlength 3
                 , type' "text"
                 , on "input" targetValue (\entry -> Signal.message events.address (CCVEntry entry))
+                , onFocus events.address CCVFocused
+                , onBlur events.address CCVFocusLeave
                 ]
           []
         , text "    "
@@ -357,6 +361,8 @@ type Event
  | ExpirationMonthChange String
  | ExpirationYearChange String
  | CCVEntry String
+ | CCVFocused
+ | CCVFocusLeave
 
 
 render : Event -> ViewState -> ViewState
@@ -371,3 +377,5 @@ render event state =
     ExpirationMonthChange newMonth -> { state | cardExpirationMonth = newMonth }
     ExpirationYearChange  newYear ->  { state | cardExpirationYear = newYear }
     CCVEntry newEntry -> { state | cardCCV = newEntry }
+    CCVFocused -> { state | cardCCVfocused = True }
+    CCVFocusLeave -> { state | cardCCVfocused = False }
