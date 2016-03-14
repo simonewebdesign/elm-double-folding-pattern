@@ -1,11 +1,12 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onFocus, onBlur, targetValue)
+import Html.Events exposing (on, onClick, onFocus, onBlur, onWithOptions, targetValue)
 import Signal exposing (Address)
 import Keyboard
 import Mouse
 import Time
 import String
+import Json.Decode as JSON
 
 
 type alias Model =
@@ -31,6 +32,7 @@ type alias ViewState =
   , cardExpirationYear: String
   , cardCCV: String
   , cardCCVfocused: Bool
+  , submitting: Bool
   }
 
 
@@ -45,6 +47,7 @@ initialViewState =
   , cardExpirationYear = ""
   , cardCCV = ""
   , cardCCVfocused = False
+  , submitting = False
   }
 
 
@@ -150,14 +153,22 @@ creditCardForm state =
           ]
         ]
       ]
-    , Html.form [ autocomplete False, class "form", novalidate False ]
-      [ fieldset [ class "card-number-inputs" ]
+    , Html.form [ class "form"
+                , onWithOptions
+                    "submit"
+                    { preventDefault = True, stopPropagation = False }
+                    (JSON.succeed Nothing)
+                    (\_ -> Signal.message events.address Submit)
+                ]
+      [ fieldset [ class "card-number-inputs"
+                 , disabled state.submitting
+                 ]
         [ label [ for "card-number" ]
           [ text "Card Number" ]
         , input [ class "input-card-number"
                 , id "card-number0"
                 , maxlength 4
-                , type' "num"
+                , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 digit))
                 ]
           []
@@ -165,7 +176,7 @@ creditCardForm state =
         , input [ class "input-card-number"
                 , id "card-number1"
                 , maxlength 4
-                , type' "num"
+                , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 digit))
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber0 > 3
                 ]
@@ -174,7 +185,7 @@ creditCardForm state =
         , input [ class "input-card-number"
                 , id "card-number2"
                 , maxlength 4
-                , type' "num"
+                , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 digit))
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber1 > 3
                 ]
@@ -183,14 +194,14 @@ creditCardForm state =
                 , input [ class "input-card-number"
                 , id "card-number3"
                 , maxlength 4
-                , type' "num"
+                , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 digit))
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber2 > 3
                 ]
           []
         , text "    "
         ]
-      , fieldset []
+      , fieldset [ disabled state.submitting ]
         [ label [ for "card-holder" ]
           [ text "Card holder" ]
         , input [ id "card-holder"
@@ -200,7 +211,9 @@ creditCardForm state =
           []
         , text "    "
         ]
-      , fieldset [ class "fieldset-expiration" ]
+      , fieldset [ class "fieldset-expiration"
+                 , disabled state.submitting
+                 ]
         [ label [ for "card-expiration-month" ]
           [ text "Expiration date" ]
         , div [ class "select" ]
@@ -264,7 +277,9 @@ creditCardForm state =
             ]
           ]
         ]
-      , fieldset [ class "fieldset-ccv" ]
+      , fieldset [ class "fieldset-ccv"
+                 , disabled state.submitting
+                 ]
         [ label [ for "card-ccv" ]
           [ text "CCV" ]
         , input [ id "card-ccv"
@@ -277,8 +292,10 @@ creditCardForm state =
           []
         , text "    "
         ]
-      , button [ class "btn" ]
-        [ i [ class "fa fa-lock" ]
+      , button [ class "btn"
+               , disabled state.submitting
+               ]
+        [ i [ class "fa fa-cog fa-spin" ]
           []
         , text "submit"
         ]
@@ -366,6 +383,7 @@ type Event
  | CCVEntry String
  | CCVFocused
  | CCVFocusLeave
+ | Submit
 
 
 render : Event -> ViewState -> ViewState
@@ -382,3 +400,4 @@ render event state =
     CCVEntry newEntry -> { state | cardCCV = newEntry }
     CCVFocused -> { state | cardCCVfocused = True }
     CCVFocusLeave -> { state | cardCCVfocused = False }
+    Submit -> { state | submitting = True }
