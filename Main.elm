@@ -142,7 +142,7 @@ creditCardForm state =
             [ label []
               [ text "CCV" ]
             , div []
-              []
+              [ text state.cardCCV ]
             ]
           ]
         ]
@@ -257,7 +257,11 @@ creditCardForm state =
       , fieldset [ class "fieldset-ccv" ]
         [ label [ for "card-ccv" ]
           [ text "CCV" ]
-        , input [ id "card-ccv", maxlength 3, type' "text" ]
+        , input [ id "card-ccv"
+                , maxlength 3
+                , type' "text"
+                , on "input" targetValue (\entry -> Signal.message events.address (CCVEntry entry))
+                ]
           []
         , text "    "
         ]
@@ -317,6 +321,7 @@ type Event
  | DigitEntry2 String
  | DigitEntry3 String
  | HolderEntry String
+ | CCVEntry String
 
 
 render : Event -> ViewState -> ViewState
@@ -328,3 +333,4 @@ render event state =
     DigitEntry2 newDigit -> { state | cardNumber2 = newDigit }
     DigitEntry3 newDigit -> { state | cardNumber3 = newDigit }
     HolderEntry newEntry -> { state | cardHolderName = newEntry }
+    CCVEntry newEntry -> { state | cardCCV = newEntry }
