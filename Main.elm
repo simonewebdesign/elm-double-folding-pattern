@@ -6,7 +6,9 @@ import Keyboard
 import Mouse
 import Time
 import String
-import Json.Decode as JSON
+import Json.Decode as JSON exposing ((:=))
+import Http
+import Task exposing (Task, andThen, onError)
 
 
 type alias Model =
@@ -102,14 +104,14 @@ view address state model =
     [ button [ onClick address Decrement ] [ text "-" ]
     , div [] [ text (toString model.counter) ]
     , button [ onClick address Increment ] [ text "+" ]
-    , creditCardForm state
+    , creditCardForm model state
     , "state: " ++ (toString state) |> text
     , "model: " ++ (toString model) |> text
     ]
 
 
-creditCardForm : ViewState -> Html
-creditCardForm state =
+creditCardForm : Model -> ViewState -> Html
+creditCardForm model state =
   div [ class "checkout" ]
     [ div [ class ("credit-card-box" ++ if state.cardCCVfocused then " hover" else "") ]
       [ div [ class "flip" ]
@@ -153,12 +155,13 @@ creditCardForm state =
           ]
         ]
       ]
+
     , Html.form [ class "form"
                 , onWithOptions
                     "submit"
                     { preventDefault = True, stopPropagation = False }
                     (JSON.succeed Nothing)
-                    (\_ -> Signal.message events.address Submit)
+                    (\_ -> Signal.message tasksMailbox.address (submit model))
                 ]
       [ fieldset [ class "card-number-inputs"
                  , disabled state.submitting
@@ -357,18 +360,18 @@ update action model =
 
 
 type Event
- = Never
- | DigitEntry0 String
- | DigitEntry1 String
- | DigitEntry2 String
- | DigitEntry3 String
- | HolderEntry String
- | ExpirationMonthChange String
- | ExpirationYearChange String
- | CCVEntry String
- | CCVFocused
- | CCVFocusLeave
- | Submit
+  = Never
+  | DigitEntry0 String
+  | DigitEntry1 String
+  | DigitEntry2 String
+  | DigitEntry3 String
+  | HolderEntry String
+  | ExpirationMonthChange String
+  | ExpirationYearChange String
+  | CCVEntry String
+  | CCVFocused
+  | CCVFocusLeave
+  | ToggleSubmit
 
 
 render : Event -> ViewState -> ViewState
@@ -385,4 +388,47 @@ render event state =
     CCVEntry newEntry -> { state | cardCCV = newEntry }
     CCVFocused -> { state | cardCCVfocused = True }
     CCVFocusLeave -> { state | cardCCVfocused = False }
-    Submit -> { state | submitting = True }
+    ToggleSubmit -> { state | submitting = not state.submitting }
+
+
+postForm : Model -> Task Http.Error Model
+postForm model =
+  let
+    url = "http://localhost:8880/api/"
+    body =
+      Http.multipart
+        [ Http.stringData "counter" (toString model.counter)
+        , Http.stringData "cardNumber" model.cardNumber
+        ]
+  in
+    Http.post responseDecoder url body
+
+
+responseDecoder : JSON.Decoder Model
+responseDecoder =
+  JSON.object2 Model
+    ("counter" := JSON.int)
+    ("cardNumber" := JSON.string)
+
+
+submit : Model -> Task x ()
+submit model =
+  toggleSubmit
+  `andThen` (\_ -> postForm model)
+  `andThen` (\_ -> toggleSubmit)
+  `onError` (\_ -> toggleSubmit)
+
+
+toggleSubmit : Task x ()
+toggleSubmit =
+  Signal.send events.address ToggleSubmit
+
+
+tasksMailbox : Signal.Mailbox (Task x ())
+tasksMailbox =
+  Signal.mailbox (Task.succeed ())
+
+
+port tasks : Signal (Task x ())
+port tasks =
+  tasksMailbox.signal
