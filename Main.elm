@@ -396,7 +396,10 @@ render event state =
     ToggleSubmit -> { state | submitting = not state.submitting }
 
 
-postForm : ViewState -> Task Http.Error CreditCard
+type alias Payload = { card: CreditCard }
+
+
+postForm : ViewState -> Task Http.Error Payload
 postForm state =
   let
     creditCard = CreditCard
@@ -416,12 +419,18 @@ postForm state =
     Http.post responseDecoder url body
 
 
-responseDecoder : JSON.Decoder CreditCard
+responseDecoder : JSON.Decoder Payload
 responseDecoder =
+  JSON.object1 Payload
+    ("card" := creditCardDecoder)
+
+
+creditCardDecoder : JSON.Decoder CreditCard
+creditCardDecoder =
   JSON.object4 CreditCard
     ("number" := JSON.string)
     ("holder" := JSON.string)
-    ("expiration" := JSON.string)
+    ("expration" := JSON.string)
     ("ccv" := JSON.string)
 
 
@@ -429,13 +438,22 @@ submit : ViewState -> Task x ()
 submit state =
   toggleSubmit
   `andThen` (\_ -> postForm state)
-  `andThen` (\_ -> toggleSubmit)
-  `onError` (\_ -> toggleSubmit)
+  `andThen` (\{card} -> updateCardDetails card)
+  `onError` (\err ->
+    let
+      log = Debug.log "err" err
+    in
+      toggleSubmit)
 
 
 toggleSubmit : Task x ()
 toggleSubmit =
   Signal.send events.address ToggleSubmit
+
+
+updateCardDetails : CreditCard -> Task x ()
+updateCardDetails card =
+  Signal.send actions.address (CardSubmitted card)
 
 
 tasksMailbox : Signal.Mailbox (Task x ())
