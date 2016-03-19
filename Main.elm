@@ -13,14 +13,22 @@ import Task exposing (Task, andThen, onError)
 
 type alias Model =
   { counter: Int
-  , cardNumber: String
+  , creditCard: CreditCard
+  }
+
+
+type alias CreditCard =
+  { number: String
+  , holder: String
+  , expiration: String
+  , ccv: String
   }
 
 
 initialModel : Model
 initialModel =
   { counter = 0
-  , cardNumber = ""
+  , creditCard = CreditCard "" "" "" ""
   }
 
 
@@ -161,7 +169,7 @@ creditCardForm model state =
                     "submit"
                     { preventDefault = True, stopPropagation = False }
                     (JSON.succeed Nothing)
-                    (\_ -> Signal.message tasksMailbox.address (submit model))
+                    (\_ -> Signal.message tasksMailbox.address (submit state))
                 ]
       [ fieldset [ class "card-number-inputs"
                  , disabled state.submitting
@@ -346,7 +354,7 @@ type Action
   = NoOp
   | Increment
   | Decrement
-  | CompletedCardNumber String
+  | CardSubmitted CreditCard
 
 
 update : Action -> Model -> Model
@@ -355,8 +363,7 @@ update action model =
     NoOp -> model
     Increment -> { model | counter = model.counter + 1 }
     Decrement -> { model | counter = model.counter - 1 }
-    CompletedCardNumber newNumber ->
-      { model | cardNumber = newNumber }
+    CardSubmitted newCard -> { model | creditCard = newCard }
 
 
 type Event
@@ -389,30 +396,39 @@ render event state =
     ToggleSubmit -> { state | submitting = not state.submitting }
 
 
-postForm : Model -> Task Http.Error Model
-postForm model =
+postForm : ViewState -> Task Http.Error CreditCard
+postForm state =
   let
+    creditCard = CreditCard
+      (cardNumber state)
+      state.cardHolderName
+      (cardExpirationDate state)
+      state.cardCCV
     url = "http://localhost:8880/api/"
     body =
       Http.multipart
-        [ Http.stringData "counter" (toString model.counter)
-        , Http.stringData "cardNumber" model.cardNumber
+        [ Http.stringData "card[number]" creditCard.number
+        , Http.stringData "card[holder]" creditCard.holder
+        , Http.stringData "card[expiration]" creditCard.expiration
+        , Http.stringData "card[ccv]" creditCard.ccv
         ]
   in
     Http.post responseDecoder url body
 
 
-responseDecoder : JSON.Decoder Model
+responseDecoder : JSON.Decoder CreditCard
 responseDecoder =
-  JSON.object2 Model
-    ("counter" := JSON.int)
-    ("cardNumber" := JSON.string)
+  JSON.object4 CreditCard
+    ("number" := JSON.string)
+    ("holder" := JSON.string)
+    ("expiration" := JSON.string)
+    ("ccv" := JSON.string)
 
 
-submit : Model -> Task x ()
-submit model =
+submit : ViewState -> Task x ()
+submit state =
   toggleSubmit
-  `andThen` (\_ -> postForm model)
+  `andThen` (\_ -> postForm state)
   `andThen` (\_ -> toggleSubmit)
   `onError` (\_ -> toggleSubmit)
 
