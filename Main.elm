@@ -430,7 +430,7 @@ creditCardDecoder =
   JSON.object4 CreditCard
     ("number" := JSON.string)
     ("holder" := JSON.string)
-    ("expration" := JSON.string)
+    ("expiration" := JSON.string)
     ("ccv" := JSON.string)
 
 
