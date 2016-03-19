@@ -289,8 +289,8 @@ creditCardForm model state =
                 , maxlength 3
                 , type' "text"
                 , on "input" targetValue (\entry -> Signal.message events.address (CCVEntry entry))
-                , onFocus events.address CCVFocused
-                , onBlur events.address CCVFocusLeave
+                , onFocus events.address ToggleCCVFocus
+                , onBlur events.address ToggleCCVFocus
                 ]
           []
         , text "    "
@@ -369,8 +369,7 @@ type Event
   | ExpirationMonthChange String
   | ExpirationYearChange String
   | CCVEntry String
-  | CCVFocused
-  | CCVFocusLeave
+  | ToggleCCVFocus
   | ToggleSubmit
 
 
@@ -386,8 +385,7 @@ render event state =
     ExpirationMonthChange newMonth -> { state | cardExpirationMonth = newMonth }
     ExpirationYearChange  newYear ->  { state | cardExpirationYear = newYear }
     CCVEntry newEntry -> { state | cardCCV = newEntry }
-    CCVFocused -> { state | cardCCVfocused = True }
-    CCVFocusLeave -> { state | cardCCVfocused = False }
+    ToggleCCVFocus -> { state | cardCCVfocused = not state.cardCCVfocused }
     ToggleSubmit -> { state | submitting = not state.submitting }
 
 
