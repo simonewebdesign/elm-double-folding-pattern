@@ -115,8 +115,6 @@ view : ViewState -> Model -> Html
 view state model =
   div []
     [
-    --successView model state
-    --, failView model state
     --button [ onClick address Decrement ] [ text "-" ]
     --, div [] [ text (toString model.counter) ]
     --, button [ onClick address Increment ] [ text "+" ]
@@ -332,40 +330,38 @@ creditCardForm state model =
 
 successView : ViewState -> Model -> Html
 successView state model =
-  text "success!!!"
-  --div [ class "modalbox success col-sm-8 col-md-6 col-lg-5 center animate" ]
-  --[ div [ class "icon" ]
-  --  [ span [ class "glyphicon glyphicon-ok" ]
-  --    []
-  --  ]
-  --, h1 []
-  --  [ text "Success!" ]
-  --, p []
-  --  [ text "We've sent a confirmation to your e-mail." ]
-  --, button [ class "redo btn", type' "button" ]
-  --  [ text "Ok" ]
-  --, span [ class "change" ]
-  --  [ text "-- Click to see opposite state --" ]
-  --]
+  div [ class "checkout modalbox success center animate" ]
+  [ div [ class "icon" ]
+    [ i [ class "fa fa-check" ]
+      []
+    ]
+  , h1 []
+    [ text "Success!" ]
+  , p []
+    [ text "We've sent a confirmation to your e-mail." ]
+  , button [ class "redo btn", type' "button" ]
+    [ text "Go back" ]
+  , span [ class "change" ]
+    [ text "-- Click here to see opposite state --" ]
+  ]
 
 
 failView : ViewState -> Model -> Html
 failView state model =
-  text "error!!!"
-  --div [ class "modalbox error col-sm-8 col-md-6 col-lg-5 center animate" ]
-  --  [ div [ class "icon" ]
-  --    [ span [ class "glyphicon glyphicon-thumbs-down" ]
-  --      []
-  --    ]
-  --  , h1 []
-  --    [ text "Oh no!" ]
-  --  , p []
-  --    [ text "Oops! Something went wrong, please try again." ]
-  --  , button [ class "redo btn", type' "button" ]
-  --    [ text "Try again" ]
-  --  , span [ class "change" ]
-  --    [ text "-- Click to see opposite state --" ]
-  --  ]
+  div [ class "checkout modalbox error center animate" ]
+    [ div [ class "icon" ]
+      [ i [ class "fa fa-times" ]
+        []
+      ]
+    , h1 []
+      [ text "Oh no!" ]
+    , p []
+      [ text "Something went wrong, please try again." ]
+    , button [ class "redo btn", type' "button" ]
+      [ text "Go back" ]
+    , span [ class "change" ]
+      [ text "-- Click here to see opposite state --" ]
+    ]
 
 
 cardNumber : ViewState -> String
@@ -432,6 +428,7 @@ type Event
   | CCVEntry String
   | ToggleCCVFocus
   | ToggleSubmit
+  | ChangeView ActiveView
 
 
 render : Event -> ViewState -> ViewState
@@ -448,6 +445,7 @@ render event state =
     CCVEntry newEntry -> { state | cardCCV = newEntry }
     ToggleCCVFocus -> { state | cardCCVfocused = not state.cardCCVfocused }
     ToggleSubmit -> { state | submitting = not state.submitting }
+    ChangeView newView -> { state | activeView = newView }
 
 
 type alias Payload = { card: CreditCard }
@@ -493,11 +491,12 @@ submit state =
   toggleSubmit
   `andThen` (\_ -> postForm state)
   `andThen` (\{card} -> updateCardDetails card)
+  `andThen` (\_ -> changeViewTo Success)
   `onError` (\err ->
     let
       log = Debug.log "err" err
     in
-      toggleSubmit)
+      changeViewTo Fail)
 
 
 toggleSubmit : Task x ()
@@ -508,6 +507,11 @@ toggleSubmit =
 updateCardDetails : CreditCard -> Task x ()
 updateCardDetails card =
   Signal.send actions.address (CardSubmitted card)
+
+
+changeViewTo : ActiveView -> Task x ()
+changeViewTo newView =
+  Signal.send events.address (ChangeView newView)
 
 
 tasksMailbox : Signal.Mailbox (Task x ())
