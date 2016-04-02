@@ -17,7 +17,10 @@ defmodule ElmMaru.Router.Homepage do
   end
 
   post "/api" do
-    :timer.sleep(2000) # just to fake a slow connection
+    if Mix.env == :dev do
+      :timer.sleep(2000) # just to fake a slow connection
+    end
+
     header("Access-Control-Allow-Origin", "*")
     IO.inspect conn.params
     conn |> json(conn.params)
