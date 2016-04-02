@@ -464,7 +464,7 @@ postForm state =
       state.cardHolderName
       (cardExpirationDate state)
       state.cardCCV
-    url = "http://localhost:8880/api/"
+    url = "https://elm.herokuapp.com/api"
     body =
       Http.multipart
         [ Http.stringData "card[number]" creditCard.number
