@@ -33,7 +33,6 @@ defmodule ElmMaru.API do
   mount ElmMaru.Router.Homepage
 
   rescue_from :all do
-    status 500
-    "CATCHALL Server Error"
+    text conn, "Elm endpoint"
   end
 end

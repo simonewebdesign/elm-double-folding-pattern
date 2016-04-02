@@ -30,4 +30,4 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :maru, ElmMaru.API,
-  http: [port: 8880]
+  http: [port: if Mix.env == :prod do System.get_env["PORT"] else 8880 end]
