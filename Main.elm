@@ -229,6 +229,7 @@ creditCardForm state model =
         [ label [ for "card-holder" ]
           [ text "Card holder" ]
         , input [ id "card-holder"
+                , maxlength 50
                 , type' "text"
                 , on "input" targetValue (\entry -> Signal.message events.address (HolderEntry entry))
                 ]
@@ -308,9 +309,10 @@ creditCardForm state model =
         , input [ id "card-ccv"
                 , maxlength 3
                 , type' "text"
-                , on "input" targetValue (\entry -> Signal.message events.address (CCVEntry entry))
+                , on "input" targetValue (\entry -> Signal.message events.address (CCVEntry (String.filter isDigit entry)))
                 , onFocus events.address ToggleCCVFocus
                 , onBlur events.address ToggleCCVFocus
+                , value state.cardCCV
                 ]
           []
         ]
