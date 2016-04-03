@@ -143,7 +143,6 @@ creditCardForm state model =
           , div [ class "logo" ]
             [ img [ alt "", src "http://cdn.flaticon.com/svg/39/39134.svg" ]
               []
-            , text "        "
             ]
           , div [ class "number" ]
             [ text (cardNumber state) ]
@@ -166,7 +165,6 @@ creditCardForm state model =
           , div [ class "logo" ]
             [ img [ alt "", src "http://cdn.flaticon.com/svg/39/39134.svg" ]
               []
-            , text "        "
             ]
           , div [ class "ccv" ]
             [ label []
@@ -197,7 +195,6 @@ creditCardForm state model =
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 digit))
                 ]
           []
-        , text "      "
         , input [ class "input-card-number"
                 , id "card-number1"
                 , maxlength 4
@@ -206,7 +203,6 @@ creditCardForm state model =
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber0 > 3
                 ]
           []
-        , text "      "
         , input [ class "input-card-number"
                 , id "card-number2"
                 , maxlength 4
@@ -215,7 +211,6 @@ creditCardForm state model =
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber1 > 3
                 ]
           []
-        , text "      "
                 , input [ class "input-card-number"
                 , id "card-number3"
                 , maxlength 4
@@ -224,7 +219,6 @@ creditCardForm state model =
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber2 > 3
                 ]
           []
-        , text "    "
         ]
       , fieldset [ disabled state.submitting ]
         [ label [ for "card-holder" ]
@@ -234,7 +228,6 @@ creditCardForm state model =
                 , on "input" targetValue (\entry -> Signal.message events.address (HolderEntry entry))
                 ]
           []
-        , text "    "
         ]
       , fieldset [ class "fieldset-expiration"
                  , disabled state.submitting
@@ -315,7 +308,6 @@ creditCardForm state model =
                 , onBlur events.address ToggleCCVFocus
                 ]
           []
-        , text "    "
         ]
       , button [ class "btn"
                , disabled state.submitting
