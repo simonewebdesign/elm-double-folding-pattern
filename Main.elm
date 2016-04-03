@@ -191,6 +191,8 @@ creditCardForm state model =
           [ text "Card Number" ]
         , input [ class "input-card-number"
                 , id "card-number0"
+                , required True
+                , pattern "\\d{4}"
                 , maxlength 4
                 , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 (String.filter isDigit digit)))
@@ -199,6 +201,8 @@ creditCardForm state model =
           []
         , input [ class "input-card-number"
                 , id "card-number1"
+                , required True
+                , pattern "\\d{4}"
                 , maxlength 4
                 , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 (String.filter isDigit digit)))
@@ -208,6 +212,8 @@ creditCardForm state model =
           []
         , input [ class "input-card-number"
                 , id "card-number2"
+                , required True
+                , pattern "\\d{4}"
                 , maxlength 4
                 , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 (String.filter isDigit digit)))
@@ -217,6 +223,8 @@ creditCardForm state model =
           []
         , input [ class "input-card-number"
                 , id "card-number3"
+                , required True
+                , pattern "\\d{4}"
                 , maxlength 4
                 , type' "text"
                 , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 (String.filter isDigit digit)))
@@ -229,6 +237,8 @@ creditCardForm state model =
         [ label [ for "card-holder" ]
           [ text "Card holder" ]
         , input [ id "card-holder"
+                , required True
+                , pattern "\\D+"
                 , maxlength 50
                 , type' "text"
                 , on "input" targetValue (\entry -> Signal.message events.address (HolderEntry entry))
@@ -242,6 +252,7 @@ creditCardForm state model =
           [ text "Expiration date" ]
         , div [ class "select" ]
           [ select [ id "card-expiration-month"
+                   , required True
                    , on "input" targetValue (\month -> Signal.message events.address (ExpirationMonthChange month))
                    ]
             [ option []
@@ -274,6 +285,7 @@ creditCardForm state model =
           ]
         , div [ class "select" ]
           [ select [ id "card-expiration-year"
+                   , required True
                    , on "input" targetValue (\year -> Signal.message events.address (ExpirationYearChange year))
                    ]
             [ option []
@@ -307,6 +319,7 @@ creditCardForm state model =
         [ label [ for "card-ccv" ]
           [ text "CCV" ]
         , input [ id "card-ccv"
+                , required True
                 , maxlength 3
                 , type' "text"
                 , on "input" targetValue (\entry -> Signal.message events.address (CCVEntry (String.filter isDigit entry)))
