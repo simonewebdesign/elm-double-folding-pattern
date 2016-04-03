@@ -5,6 +5,7 @@ import Signal exposing (Address)
 import Keyboard
 import Mouse
 import Time
+import Char exposing (isDigit)
 import String
 import Json.Decode as JSON exposing ((:=))
 import Http
@@ -192,31 +193,35 @@ creditCardForm state model =
                 , id "card-number0"
                 , maxlength 4
                 , type' "text"
-                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 digit))
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry0 (String.filter isDigit digit)))
+                , value state.cardNumber0
                 ]
           []
         , input [ class "input-card-number"
                 , id "card-number1"
                 , maxlength 4
                 , type' "text"
-                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 digit))
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry1 (String.filter isDigit digit)))
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber0 > 3
+                , value state.cardNumber1
                 ]
           []
         , input [ class "input-card-number"
                 , id "card-number2"
                 , maxlength 4
                 , type' "text"
-                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 digit))
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry2 (String.filter isDigit digit)))
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber1 > 3
+                , value state.cardNumber2
                 ]
           []
-                , input [ class "input-card-number"
+        , input [ class "input-card-number"
                 , id "card-number3"
                 , maxlength 4
                 , type' "text"
-                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 digit))
+                , on "input" targetValue (\digit -> Signal.message events.address (DigitEntry3 (String.filter isDigit digit)))
                 , attribute "data-autofocus" <| toString <| String.length state.cardNumber2 > 3
+                , value state.cardNumber3
                 ]
           []
         ]
