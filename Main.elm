@@ -338,13 +338,6 @@ successView state model =
     [ text "Success!" ]
   , p []
     [ text "We've sent a confirmation to your e-mail." ]
-  , button [ class "redo btn"
-           , type' "button"
-           , onClick events.address (ChangeView CreditCardForm)
-           ]
-    [ text "Go back" ]
-  , span [ class "change" ]
-    [ text "-- Click here to see opposite state --" ]
   ]
 
 
