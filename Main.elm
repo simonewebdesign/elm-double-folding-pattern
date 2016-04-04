@@ -335,9 +335,8 @@ creditCardForm state model =
       , button [ class "btn"
                , disabled state.submitting
                ]
-        [ i [ class "fa fa-cog fa-spin" ]
-          []
-        , text "submit"
+        [ if state.submitting then i [ class "fa fa-cog fa-spin" ] [] else text ""
+        , text "Submit"
         ]
       ]
     ]
