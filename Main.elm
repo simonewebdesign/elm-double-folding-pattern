@@ -64,7 +64,7 @@ initialViewState =
   }
 
 
-type ActiveView = CreditCardForm | Success | Fail
+type ActiveView = CreditCardForm | Success | Fail Http.Error
 
 
 model : Signal Model
@@ -130,7 +130,7 @@ activeView view =
   case view of
     CreditCardForm -> creditCardForm
     Success -> successView
-    Fail -> failView
+    Fail error -> failView error
 
 
 creditCardForm : ViewState -> Model -> Html
@@ -242,6 +242,7 @@ creditCardForm state model =
                 , maxlength 50
                 , type' "text"
                 , on "input" targetValue (\entry -> Signal.message events.address (HolderEntry entry))
+                , value state.cardHolderName
                 ]
           []
         ]
@@ -254,32 +255,33 @@ creditCardForm state model =
           [ select [ id "card-expiration-month"
                    , required True
                    , on "input" targetValue (\month -> Signal.message events.address (ExpirationMonthChange month))
+                   , value state.cardExpirationMonth
                    ]
             [ option []
               []
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Jan" ]
               [ text "Jan" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Feb" ]
               [ text "Feb" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Mar" ]
               [ text "Mar" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Apr" ]
               [ text "Apr" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "May" ]
               [ text "May" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Jun" ]
               [ text "Jun" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Jul" ]
               [ text "Jul" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Ago" ]
               [ text "Ago" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Sep" ]
               [ text "Sep" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Oct" ]
               [ text "Oct" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Nov" ]
               [ text "Nov" ]
-            , option []
+            , option [ selected <| state.cardExpirationMonth == "Dec" ]
               [ text "Dec" ]
             ]
           ]
@@ -287,28 +289,29 @@ creditCardForm state model =
           [ select [ id "card-expiration-year"
                    , required True
                    , on "input" targetValue (\year -> Signal.message events.address (ExpirationYearChange year))
+                   , value state.cardExpirationYear
                    ]
             [ option []
               []
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2016" ]
               [ text "2016" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2017" ]
               [ text "2017" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2018" ]
               [ text "2018" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2019" ]
               [ text "2019" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2020" ]
               [ text "2020" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2021" ]
               [ text "2021" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2022" ]
               [ text "2022" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2023" ]
               [ text "2023" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2024" ]
               [ text "2024" ]
-            , option []
+            , option [ selected <| state.cardExpirationYear == "2025" ]
               [ text "2025" ]
             ]
           ]
@@ -354,8 +357,8 @@ successView state model =
   ]
 
 
-failView : ViewState -> Model -> Html
-failView state model =
+failView : Http.Error -> ViewState -> Model -> Html
+failView error state model =
   div [ class "checkout modalbox error center animate" ]
     [ div [ class "icon" ]
       [ i [ class "fa fa-times" ]
@@ -370,7 +373,7 @@ failView state model =
              , onClick events.address (ChangeView CreditCardForm)
              ]      [ text "Go back" ]
     , span [ class "change" ]
-      [ text "-- Click here to see opposite state --" ]
+      [ text <| "Error type: " ++ (toString error) ]
     ]
 
 
@@ -503,11 +506,8 @@ submit state =
   `andThen` (\{card} -> updateCardDetails card)
   `andThen` (\_ -> changeViewTo Success)
   `onError` (\err ->
-    let
-      log = Debug.log "err" err
-    in
-      changeViewTo Fail
-      `andThen` (\_ -> toggleSubmit))
+    changeViewTo (Fail err)
+    `andThen` (\_ -> toggleSubmit))
 
 
 toggleSubmit : Task x ()
