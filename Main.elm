@@ -120,7 +120,15 @@ view state model =
     --, div [] [ text (toString model.counter) ]
     --, button [ onClick address Increment ] [ text "+" ]
     (activeView state.activeView) state model
-    , "state: " ++ (toString state) |> text
+    , debugView state model
+    ]
+
+
+debugView : ViewState -> Model -> Html
+debugView state model =
+  div [ class "debug" ]
+    [ "state: " ++ (toString state) |> text
+    , br [] []
     , "model: " ++ (toString model) |> text
     ]
 

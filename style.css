@@ -165,6 +165,17 @@ Checkout
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
+.debug {
+  display: block;
+  width: 460px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 15px;
+  margin: auto;
+  padding: 30px 45px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  font-family: monospace;
+}
+
 /*--------------------
 Credit Card
 --------------------*/
@@ -328,13 +339,10 @@ Credit Card
 
 /* SUCCESS and ERROR */
 
-body {
-  overflow: hidden;
-}
 .modalbox.success,
 .modalbox.error {
   margin-top: 15%;
-  padding: 25px 25px 15px;
+  padding: 25px 25px 50px;
   text-align: center;
 }
 .modalbox.success.animate .icon,
