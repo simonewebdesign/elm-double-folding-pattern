@@ -174,7 +174,13 @@ Checkout
   padding: 30px 45px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   font-family: monospace;
+  opacity: 0;
+  transition: opacity .6s ease-out;
 }
+.debug.active {
+  opacity: 1;
+}
+
 
 /*--------------------
 Credit Card

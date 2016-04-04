@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onFocus, onBlur, onWithOptions, targetValue)
+import Html.Events exposing (on, onClick, onDoubleClick, onFocus, onBlur, onWithOptions, targetValue)
 import Signal exposing (Address)
 import Keyboard
 import Mouse
@@ -45,6 +45,7 @@ type alias ViewState =
   , cardCCV: String
   , cardCCVfocused: Bool
   , submitting: Bool
+  , debug: Bool
   }
 
 
@@ -61,6 +62,7 @@ initialViewState =
   , cardCCV = ""
   , cardCCVfocused = False
   , submitting = False
+  , debug = False
   }
 
 
@@ -126,11 +128,13 @@ view state model =
 
 debugView : ViewState -> Model -> Html
 debugView state model =
-  div [ class "debug" ]
-    [ "state: " ++ (toString state) |> text
-    , br [] []
-    , "model: " ++ (toString model) |> text
-    ]
+  div [ class ("debug" ++ if state.debug then " active" else "")
+      , onDoubleClick events.address ToggleDebug
+      ]
+      [ "state: " ++ (toString state) |> text
+      , br [] []
+      , "model: " ++ (toString model) |> text
+      ]
 
 
 activeView : ActiveView -> (ViewState -> Model -> Html)
@@ -448,6 +452,7 @@ type Event
   | CCVEntry String
   | ToggleCCVFocus
   | ToggleSubmit
+  | ToggleDebug
   | ChangeView ActiveView
 
 
@@ -465,6 +470,7 @@ render event state =
     CCVEntry newEntry -> { state | cardCCV = newEntry }
     ToggleCCVFocus -> { state | cardCCVfocused = not state.cardCCVfocused }
     ToggleSubmit -> { state | submitting = not state.submitting }
+    ToggleDebug -> { state | debug = not state.debug }
     ChangeView newView -> { state | activeView = newView }
 
 
