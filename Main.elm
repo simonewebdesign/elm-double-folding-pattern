@@ -365,6 +365,18 @@ successView state model =
     [ text "Success!" ]
   , p []
     [ text "We've sent a confirmation to your e-mail." ]
+  , h2 []
+    [ text "Payment details" ]
+  , dl []
+    [ dt []
+      [ text "Card number" ]
+    , dd []
+      [ text model.creditCard.number ]
+    , dt []
+      [ text "Card holder" ]
+    , dd []
+      [ text model.creditCard.holder ]
+    ]
   ]
 
 

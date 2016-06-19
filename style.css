@@ -384,6 +384,23 @@ Credit Card
 .modalbox.error .icon {
   background: #ff424f;
 }
+.modalbox.success dl {
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.modalbox.success dt,
+.modalbox.success dd {
+  width: 50%;
+  float: left;
+  text-align: left;
+}
+.modalbox.success dt {
+  font-weight: bold;
+}
+.modalbox.success dd {
+  margin-left: 0;
+}
+
 .center {
   float: none;
   margin-left: auto;
