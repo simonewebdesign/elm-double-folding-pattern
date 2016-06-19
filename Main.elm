@@ -2,9 +2,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onClick, onDoubleClick, onFocus, onBlur, onWithOptions, targetValue)
 import Signal exposing (Address)
-import Keyboard
-import Mouse
-import Time
 import Char exposing (isDigit)
 import String
 import Json.Decode as JSON exposing ((:=))
@@ -13,8 +10,7 @@ import Task exposing (Task, andThen, onError)
 
 
 type alias Model =
-  { counter: Int
-  , creditCard: CreditCard
+  { creditCard: CreditCard
   }
 
 
@@ -28,8 +24,7 @@ type alias CreditCard =
 
 initialModel : Model
 initialModel =
-  { counter = 0
-  , creditCard = CreditCard "" "" "" ""
+  { creditCard = CreditCard "" "" "" ""
   }
 
 
@@ -91,19 +86,7 @@ events =
 
 inputs : Signal Action
 inputs =
-  let
-    x = Signal.map .x Keyboard.arrows
-    delta = Time.fps 30
-    toAction n =
-      case n of
-        -1 -> Decrement
-        1 -> Increment
-        _ -> NoOp
-
-    arrows = Signal.sampleOn delta (Signal.map toAction x)
-    clicks = Signal.map (always Increment) Mouse.clicks
-  in
-    Signal.mergeMany [actions.signal, arrows, clicks]
+  actions.signal
 
 
 main : Signal Html
@@ -117,11 +100,7 @@ main =
 view : ViewState -> Model -> Html
 view state model =
   div []
-    [
-    --button [ onClick address Decrement ] [ text "-" ]
-    --, div [] [ text (toString model.counter) ]
-    --, button [ onClick address Increment ] [ text "+" ]
-    (activeView state.activeView) state model
+    [ (activeView state.activeView) state model
     , debugView state model
     ]
 
@@ -438,8 +417,6 @@ cardExpirationDate state =
 
 type Action
   = NoOp
-  | Increment
-  | Decrement
   | CardSubmitted CreditCard
 
 
@@ -447,8 +424,6 @@ update : Action -> Model -> Model
 update action model =
   case action of
     NoOp -> model
-    Increment -> { model | counter = model.counter + 1 }
-    Decrement -> { model | counter = model.counter - 1 }
     CardSubmitted newCard -> { model | creditCard = newCard }
 
 
