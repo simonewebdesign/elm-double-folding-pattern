@@ -248,33 +248,7 @@ creditCardForm state model =
                    , on "input" targetValue (\month -> Signal.message events.address (ExpirationMonthChange month))
                    , value state.cardExpirationMonth
                    ]
-            [ option []
-              []
-            , option [ selected <| state.cardExpirationMonth == "Jan" ]
-              [ text "Jan" ]
-            , option [ selected <| state.cardExpirationMonth == "Feb" ]
-              [ text "Feb" ]
-            , option [ selected <| state.cardExpirationMonth == "Mar" ]
-              [ text "Mar" ]
-            , option [ selected <| state.cardExpirationMonth == "Apr" ]
-              [ text "Apr" ]
-            , option [ selected <| state.cardExpirationMonth == "May" ]
-              [ text "May" ]
-            , option [ selected <| state.cardExpirationMonth == "Jun" ]
-              [ text "Jun" ]
-            , option [ selected <| state.cardExpirationMonth == "Jul" ]
-              [ text "Jul" ]
-            , option [ selected <| state.cardExpirationMonth == "Ago" ]
-              [ text "Ago" ]
-            , option [ selected <| state.cardExpirationMonth == "Sep" ]
-              [ text "Sep" ]
-            , option [ selected <| state.cardExpirationMonth == "Oct" ]
-              [ text "Oct" ]
-            , option [ selected <| state.cardExpirationMonth == "Nov" ]
-              [ text "Nov" ]
-            , option [ selected <| state.cardExpirationMonth == "Dec" ]
-              [ text "Dec" ]
-            ]
+            ([ option [] [] ] ++ (opts ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] state.cardExpirationMonth))
           ]
         , div [ class "select" ]
           [ select [ id "card-expiration-year"
@@ -282,29 +256,7 @@ creditCardForm state model =
                    , on "input" targetValue (\year -> Signal.message events.address (ExpirationYearChange year))
                    , value state.cardExpirationYear
                    ]
-            [ option []
-              []
-            , option [ selected <| state.cardExpirationYear == "2016" ]
-              [ text "2016" ]
-            , option [ selected <| state.cardExpirationYear == "2017" ]
-              [ text "2017" ]
-            , option [ selected <| state.cardExpirationYear == "2018" ]
-              [ text "2018" ]
-            , option [ selected <| state.cardExpirationYear == "2019" ]
-              [ text "2019" ]
-            , option [ selected <| state.cardExpirationYear == "2020" ]
-              [ text "2020" ]
-            , option [ selected <| state.cardExpirationYear == "2021" ]
-              [ text "2021" ]
-            , option [ selected <| state.cardExpirationYear == "2022" ]
-              [ text "2022" ]
-            , option [ selected <| state.cardExpirationYear == "2023" ]
-              [ text "2023" ]
-            , option [ selected <| state.cardExpirationYear == "2024" ]
-              [ text "2024" ]
-            , option [ selected <| state.cardExpirationYear == "2025" ]
-              [ text "2025" ]
-            ]
+            ([ option [] [] ] ++ (opts (List.map ((++) "20") ["16", "17", "18", "19", "20", "21", "22", "23", "24", "25"]) state.cardExpirationYear))
           ]
         ]
       , fieldset [ class "fieldset-ccv"
@@ -331,6 +283,16 @@ creditCardForm state model =
         ]
       ]
     ]
+
+
+opts : List String -> String -> List Html
+opts values currentValue =
+  List.map (opt currentValue) values
+
+
+opt : String -> String -> Html
+opt currentValue expectedValue =
+  option [ selected (currentValue == expectedValue) ] [ text expectedValue ]
 
 
 successView : ViewState -> Model -> Html
