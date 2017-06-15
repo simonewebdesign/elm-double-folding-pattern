@@ -1,6 +1,3 @@
-/* http://stackoverflow.com/a/33403829
- * create HTML elements by including Html.Attributes.attribute "data-autofocus" ""
- */
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     mutation.target.focus();
