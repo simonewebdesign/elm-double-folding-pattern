@@ -6,3 +6,11 @@ A new architectural pattern for separating business logic from presentation logi
 
 - Discussion: https://groups.google.com/forum/#!topic/elm-discuss/IU4zPO6vn5A
 - Demo: https://simonewebdesign.it/demo/elm
+
+## Get it up and running locally
+
+0. Install Elm v0.16 - `npm i -g elm@0.16`
+1. Clone this repo
+2. `cd` into the project's root directory
+3. `elm-make Main.elm --output elm.js`
+4. Open `index.html` with your web browser of choice
